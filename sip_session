@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+# Use Simple CLient SDK and Client and capture Performance metrics of SIP audio sessions.
+
+# Set environment variables from Catchpoint script.
+SIP_TO_URI="${CP_UNSAFE_VAR_SIPADDRESSTO}"
+CALL_DURATION="${CP_UNSAFE_VAR_DURATION}"
+SIP_TO_URI="maxvoipcp@sip2sip.info"
+CALL_DURATION=20
+
+################################################################################
+# Handle error and print to stderr.
+# Arguments:
+#   Error details.
+# Output:
+#   Writes metric to stderr.
+################################################################################
+error_handling(){
+  echo "[ERROR]: $*" >&2
+}
+
+
+################################################################################
+# Use SIP simple client SDK and Client to trigger and record performance of audio session.
+# Globals:
+#   SIP_TO_URI
+#   CALL_DURATION
+# Output:
+#   Prints call logs on the terminal.
+################################################################################
+intitiate_sip_call(){
+# Check environment variables for value.
+  if [[ -z "${SIP_TO_URI}" ]] || [[ -z "${CALL_DURATION}" ]]; then
+    error_handling "Environment variables are empty, need to pass SIP URI to call and call duration."
+    exit 1
+  fi
+
+  if (( ${CALL_DURATION} > 100 )); then
+    error_handling "Call duration cannot be greater than 100 seconds."
+    exit 1
+  fi
+
+  # run the audio call with SIP client SDK and sip-session command.
+  # Add call duration and caller SIP URI dynamically.
+  sudo sip-session --auto-hangup ${CALL_DURATION} ${SIP_TO_URI}
+}
+
+
+# Fuction to initiate SIP VoIP audio session and capture RTP metrics.
+intitiate_sip_call
+
